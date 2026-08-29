@@ -32,6 +32,13 @@ export const AFFILIATE_LINKS: Record<string, string> = {
     ) +
     "&intsrc=CATF_5812",
 
+  "browns-mojo-duffel-bag":
+    "https://fanatics.93n6tx.net/c/2495264/806573/9663?prodsku=2245331&u=" +
+    encodeURIComponent(
+      "https://www.fanatics.com/nfl/cleveland-browns/cleveland-browns-mojo-22-2-wheeled-duffel-bag-black/o-2461+t-25263550+p-46681505593+z-9-1908338414"
+    ) +
+    "&intsrc=CATF_5812",
+
   // Add more curated products here:
   // "some-other-product": "https://fanatics.93n6tx.net/c/...&u=...&intsrc=...",
 };
