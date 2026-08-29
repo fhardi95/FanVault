@@ -24,6 +24,24 @@ if (!inputPath) {
   process.exit(1);
 }
 
+/**
+ * Impact Radius (the network behind these fanatics.93n6tx.net links)
+ * decodes the `u=` destination parameter with an extra, unwanted pass that
+ * treats a literal "+" as a space (classic PHP urldecode()-twice bug).
+ * The feed ships `u=` single-encoded, e.g. ...%2Bt-92673327... — after
+ * Impact's buggy double-decode, that %2B becomes a real space, which lands
+ * as %20 in the final Fanatics URL and 404s.
+ *
+ * Fix: double-encode just the `u=` value before storing it, so it survives
+ * Impact's extra decode pass intact and only resolves to a literal "+" on
+ * the final hop, inside a path segment where +-as-space doesn't apply.
+ */
+function doubleEncodeUParam(rawTrackingUrl) {
+  return rawTrackingUrl.replace(/([?&]u=)([^&]*)/, (_, prefix, value) => {
+    return prefix + encodeURIComponent(value);
+  });
+}
+
 const csvRaw = fs.readFileSync(path.resolve(inputPath), "utf8");
 
 const rows = parse(csvRaw, {
@@ -52,7 +70,7 @@ for (const row of rows) {
     continue;
   }
 
-  linkBySku[sku] = rawUrl;
+  linkBySku[sku] = doubleEncodeUParam(rawUrl);
 
   index.push({
     sku,

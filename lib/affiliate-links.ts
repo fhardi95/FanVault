@@ -24,18 +24,24 @@ export const FANATICS_AFFILIATE = {
 };
 
 // ---- 1. Static slug -> full affiliate URL map -----------------------------
+// NOTE: the destination URL (u=) is deliberately DOUBLE percent-encoded —
+// see the comment on buildFanaticsAffiliateLink() below for why.
 export const AFFILIATE_LINKS: Record<string, string> = {
   "giants-bryce-eldridge-tee":
     "https://fanatics.93n6tx.net/c/2495264/806573/9663?prodsku=2002079599&u=" +
     encodeURIComponent(
-      "https://www.fanatics.com/mlb/san-francisco-giants/bryce-eldridge-san-francisco-giants-nike-womens-home-name-and-number-t-shirt-black/o-1232+t-92673327+p-91221168108121+z-9-1655615941"
+      encodeURIComponent(
+        "https://www.fanatics.com/mlb/san-francisco-giants/bryce-eldridge-san-francisco-giants-nike-womens-home-name-and-number-t-shirt-black/o-1232+t-92673327+p-91221168108121+z-9-1655615941"
+      )
     ) +
     "&intsrc=CATF_5812",
 
   "browns-mojo-duffel-bag":
     "https://fanatics.93n6tx.net/c/2495264/806573/9663?prodsku=2245331&u=" +
     encodeURIComponent(
-      "https://www.fanatics.com/nfl/cleveland-browns/cleveland-browns-mojo-22-2-wheeled-duffel-bag-black/o-2461+t-25263550+p-46681505593+z-9-1908338414"
+      encodeURIComponent(
+        "https://www.fanatics.com/nfl/cleveland-browns/cleveland-browns-mojo-22-2-wheeled-duffel-bag-black/o-2461+t-25263550+p-46681505593+z-9-1908338414"
+      )
     ) +
     "&intsrc=CATF_5812",
 
@@ -47,18 +53,29 @@ export const AFFILIATE_LINKS: Record<string, string> = {
  * Builds a Fanatics affiliate tracking URL from a plain fanatics.com product
  * page URL, so you can generate links for new products without hand-writing
  * the encoded string every time.
+ *
+ * IMPORTANT: the destination (`u=`) is DOUBLE percent-encoded, not single.
+ * Impact Radius (the network behind fanatics.93n6tx.net) runs an extra,
+ * unwanted decode pass on `u=` that treats a literal "+" as a space —
+ * exactly like the old application/x-www-form-urlencoded convention. Since
+ * Fanatics product URLs use "+" to separate the trailing o-/t-/p-/z- codes
+ * (e.g. .../o-1232+t-92673327+p-.../), a single-encoded destination survives
+ * Impact's decode as a real "+", then gets mangled into a space by their
+ * extra pass — which becomes %20 in the final Fanatics URL and 404s.
+ * Double-encoding absorbs that extra pass: it survives Impact's decode
+ * intact and only resolves to a literal "+" on the final hop, inside a path
+ * segment where +-as-space doesn't apply.
  */
 export function buildFanaticsAffiliateLink(
   targetUrl: string,
   opts?: { sku?: string; intsrc?: string }
 ): string {
   const { domain, campaignId, siteId, adId, intsrc } = FANATICS_AFFILIATE;
-  const params = new URLSearchParams();
-  if (opts?.sku) params.set("prodsku", opts.sku);
-  params.set("u", targetUrl); // URLSearchParams encodes this for us
-  params.set("intsrc", opts?.intsrc ?? intsrc);
+  const skuPart = opts?.sku ? `prodsku=${encodeURIComponent(opts.sku)}&` : "";
+  const uPart = encodeURIComponent(encodeURIComponent(targetUrl));
+  const intsrcPart = encodeURIComponent(opts?.intsrc ?? intsrc);
 
-  return `https://${domain}/c/${campaignId}/${siteId}/${adId}?${params.toString()}`;
+  return `https://${domain}/c/${campaignId}/${siteId}/${adId}?${skuPart}u=${uPart}&intsrc=${intsrcPart}`;
 }
 
 // Only these hosts are allowed as redirect *targets* for the dynamic
