@@ -3,6 +3,7 @@ import {
   buildFanaticsAffiliateLink,
   ALLOWED_TARGET_HOSTS,
   FANATICS_AFFILIATE,
+  normalizeTrackingLink,
 } from "@/lib/affiliate-links";
 
 export const dynamic = "force-dynamic";
@@ -36,9 +37,12 @@ export async function GET(req: NextRequest) {
   }
 
   // Case B: it's already a full tracking link on the affiliate network
-  // domain — don't rebuild it, just pass it through as-is.
+  // domain. Normalize the u= encoding before forwarding — the link may
+  // have arrived correctly single-encoded, already double-encoded, or
+  // partially re-decoded by whatever platform it was shared through
+  // (Pinterest, etc). normalizeTrackingLink() fixes it regardless.
   if (parsed.hostname === FANATICS_AFFILIATE.domain) {
-    return NextResponse.redirect(parsed.toString(), 302);
+    return NextResponse.redirect(normalizeTrackingLink(parsed.toString()), 302);
   }
 
   // Case A: plain product URL — guard against this being used as an open

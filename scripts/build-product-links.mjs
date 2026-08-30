@@ -38,7 +38,18 @@ if (!inputPath) {
  */
 function doubleEncodeUParam(rawTrackingUrl) {
   return rawTrackingUrl.replace(/([?&]u=)([^&]*)/, (_, prefix, value) => {
-    return prefix + encodeURIComponent(value);
+    let decoded = value;
+    for (let i = 0; i < 6; i++) {
+      let next;
+      try {
+        next = decodeURIComponent(decoded);
+      } catch {
+        break;
+      }
+      if (next === decoded) break;
+      decoded = next;
+    }
+    return prefix + encodeURIComponent(encodeURIComponent(decoded));
   });
 }
 
@@ -75,6 +86,7 @@ for (const row of rows) {
   index.push({
     sku,
     name: row.name_field || "",
+    description: row.description_field || "",
     category: row.category_field || "",
     team: row.team || "",
     price: row.current_price || "",

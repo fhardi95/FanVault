@@ -78,6 +78,34 @@ export function buildFanaticsAffiliateLink(
   return `https://${domain}/c/${campaignId}/${siteId}/${adId}?${skuPart}u=${uPart}&intsrc=${intsrcPart}`;
 }
 
+/**
+ * Given a full fanatics.93n6tx.net tracking URL in ANY state — correctly
+ * single-encoded (straight from the feed), already double-encoded (from our
+ * own fixed links), or partially re-decoded by a third party (Pinterest,
+ * some link shorteners, etc.) — returns it with the `u=` parameter
+ * correctly double-encoded. Safe to call on any tracking link at any point.
+ *
+ * How: fully decode the `u=` value (looping decodeURIComponent until it
+ * stops changing, so it doesn't matter how many layers of encoding it
+ * currently has), then re-encode it exactly twice.
+ */
+export function normalizeTrackingLink(rawTrackingUrl: string): string {
+  return rawTrackingUrl.replace(/([?&]u=)([^&]*)/, (_, prefix, value) => {
+    let decoded = value;
+    for (let i = 0; i < 6; i++) {
+      let next: string;
+      try {
+        next = decodeURIComponent(decoded);
+      } catch {
+        break;
+      }
+      if (next === decoded) break;
+      decoded = next;
+    }
+    return prefix + encodeURIComponent(encodeURIComponent(decoded));
+  });
+}
+
 // Only these hosts are allowed as redirect *targets* for the dynamic
 // /go/product route — prevents your redirector being abused as an open
 // redirect to an arbitrary site.
