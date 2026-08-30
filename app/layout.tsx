@@ -1,7 +1,7 @@
 export const metadata = {
   title: "FanVault — Product Catalog",
   other: {
-    "p:domain_verify": "12iD3XhCQfYF5sf6FaMrzrGFxzrKJ4u85L",
+    "p:domain_verify": "3efe3091c64ff196eed45a7c87c69f04",
   },
 };
 
