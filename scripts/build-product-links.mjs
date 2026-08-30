@@ -9,7 +9,7 @@
 //
 // Output:
 //   lib/product-links.json   { "203470997": "https://fanatics.93n6tx.net/...", ... }
-//   lib/product-index.json   [{ sku, name, category, team, price }, ...]  (for search/browse UI)
+//   lib/product-index.json   [{ sku, name, description, category, team, price, ... }, ...]  (for search/browse UI + Pinterest feed)
 //
 // Re-run this any time you get a fresh feed export — it fully overwrites
 // both output files.
@@ -90,9 +90,12 @@ for (const row of rows) {
     category: row.category_field || "",
     team: row.team || "",
     price: row.current_price || "",
+    originalPrice: row.orginal_price_field || "",
     image: row.image_url_field || "",
+    additionalImage: (row.additional_image_urls || "").split(";")[0]?.trim() || "",
     manufacturer: row.manufacturer || "",
-    gtin: row.gtin || "",
+    gender: (row.gender || "").trim(),
+    ageGroup: (row.age_group || "").trim(),
   });
 }
 
