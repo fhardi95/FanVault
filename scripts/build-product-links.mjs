@@ -91,6 +91,8 @@ for (const row of rows) {
     team: row.team || "",
     price: row.current_price || "",
     image: row.image_url_field || "",
+    manufacturer: row.manufacturer || "",
+    gtin: row.gtin || "",
   });
 }
 
