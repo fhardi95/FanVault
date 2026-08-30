@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "FanVault — Affiliate Product Catalog",
+  title: "FanVault — Product Catalog",
 };
 
 export default function RootLayout({

@@ -19,14 +19,13 @@ export default function Home() {
   return (
     <main className="page">
       <header className="hero">
-        <div className="hero-eyebrow">FanVault · Affiliate Catalog</div>
+        <div className="hero-eyebrow">FanVault · Catalog</div>
         <h1 className="hero-title">
           <span className="hero-title-line">{totalProducts.toLocaleString()}</span>
           <span className="hero-title-sub">licensed products, one click away</span>
         </h1>
         <p className="hero-copy">
-          Search the full Fanatics catalog and grab a clean tracking link for
-          any product — no encoding, no broken redirects.
+          Search the full catalog and jump straight to any product.
         </p>
       </header>
 
@@ -44,11 +43,6 @@ export default function Home() {
           </ul>
         </section>
       )}
-
-      <footer className="page-footer">
-        <code>/go/p/&lt;sku&gt;</code> — direct product link ·{" "}
-        <code>/go/product?url=…</code> — build one on the fly
-      </footer>
 
       <style>{`
         :global(html) {
@@ -133,16 +127,6 @@ export default function Home() {
         }
         .curated-list a:hover {
           text-decoration: underline;
-        }
-        .page-footer {
-          margin-top: 48px;
-          padding-top: 20px;
-          border-top: 1px solid #1c2333;
-          color: #6b7385;
-          font-size: 0.78rem;
-        }
-        .page-footer code {
-          color: #8a93a6;
         }
       `}</style>
     </main>

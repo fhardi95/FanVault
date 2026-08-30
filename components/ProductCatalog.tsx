@@ -101,13 +101,7 @@ export default function ProductCatalog({
 
       <div className="grid">
         {results.map((p, i) => (
-          <a
-            key={`${p.sku}-${i}`}
-            href={p.link}
-            className="card"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a key={`${p.sku}-${i}`} href={`/product/${p.sku}`} className="card">
             <div className="card-image-wrap">
               {p.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
